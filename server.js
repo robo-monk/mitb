@@ -1,22 +1,30 @@
-// Require the framework and instantiate it
-const fastify = require('fastify')({ logger: true })
-// const functions = require('firebase-functions')
-// const cors = require('cors');
-// import fastify from 'https://esm.sh/fastify@3.25.3';
-// import fastify from 'https://cdn.skypack.dev/fastify';
+const functions = require('firebase-functions');
+let requestHandler = null;
 
-// Declare a route
-fastify.get('/', async (request, reply) => {
-	return { hello: 'world' };
+const fastify = require('fastify')({
+	logger: true,
+	serverFactory: (handler) => {
+		requestHandler = handler;
+		return require('http').createServer();
+	},
 });
 
-// Run the server!
-const start = async () => {
-	try {
-		await fastify.listen(3000);
-	} catch (err) {
-		fastify.log.error(err);
-		process.exit(1);
-	}
-};
-start();
+fastify.addContentTypeParser('application/json', {}, (req, body, done) => {
+	done(null, body.body);
+});
+
+fastify.get('/', async (req) => {
+	console.log('yo');
+	return "What's up bitch";
+});
+
+fastify.post('/postToMeWithJSON', async (req) => {
+	return req.body;
+});
+
+exports.api = functions.https.onRequest((req, res) => {
+	fastify.ready((err) => {
+		if (err) throw err;
+		requestHandler(req, res);
+	});
+});
