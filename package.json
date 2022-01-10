@@ -1,11 +1,12 @@
 {
   "name": "mitm",
   "version": "0.0.1",
-  "main": "index.js",
+  "main": "main.js",
   "author": "robo-monk",
   "license": "MIT",
   "scripts": {
-    "start": "node server"
+    "start": "node server",
+	"dev": "firebase emulators:start"
   },
   "dependencies": {
     "@google-cloud/functions-framework": "^2.1.0",

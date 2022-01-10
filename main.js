@@ -22,7 +22,9 @@ fastify.post('/postToMeWithJSON', async (req) => {
 	return req.body;
 });
 
-exports.api = functions.https.onRequest((req, res) => {
+exports.api = functions.https
+    .region('europe-west1')
+	.onRequest((req, res) => {
 	fastify.ready((err) => {
 		if (err) throw err;
 		requestHandler(req, res);
