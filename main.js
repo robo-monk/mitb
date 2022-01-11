@@ -1,5 +1,6 @@
 const functions = require('firebase-functions');
 const captcha = require('./lib/captcha.js');
+const { encrypt, hmac, decrypt } = require('./lib/encryption.js');
 // const env = require('./lib/env.js');
 let requestHandler = null;
 
@@ -14,8 +15,8 @@ const fastify = require('fastify')({
 
 // add a rate limiter
 fastify.register(require('fastify-rate-limit'), {
-  max: 25,
-  timeWindow: '1 minute'
+	max: 25,
+	timeWindow: '1 minute',
 });
 
 fastify.addContentTypeParser('application/json', {}, (req, body, done) => {
@@ -36,10 +37,16 @@ fastify.post('/request', async ({ body }) => {
 	// const success = pass ? body : { error: 'Invalid' };
 
 	if (existingTokens.size > 1000) existingTokens = new Set();
-	existingTokens.add(token)
+	existingTokens.add(token);
+
+	const payload = {
+		token,
+		pass,
+	};
 
 	return {
-		pass
+		payload,
+		hmac: hmac(payload),
 	};
 });
 
