@@ -5,16 +5,26 @@ let requestHandler = null;
 
 const fastify = require('fastify')({
 	logger: true,
+	trustProxy: true,
 	serverFactory: (handler) => {
 		requestHandler = handler;
 		return require('http').createServer();
 	},
 });
 
+// add a rate limiter
+fastify.register(require('fastify-rate-limit'), {
+  max: 25,
+  timeWindow: '1 minute'
+});
+
 fastify.addContentTypeParser('application/json', {}, (req, body, done) => {
 	done(null, body.body);
 });
 
+// fastify.get("/ip", ({ ip, ips, headers }) => {
+// 	return { ip, ips, headers }
+// })
 
 const existingTokens = new Set();
 fastify.post('/request', async ({ body }) => {
@@ -23,12 +33,14 @@ fastify.post('/request', async ({ body }) => {
 	let pass =
 		!existingTokens.has(token) && (await captcha.validateToken(token));
 
-	const res = pass ? body : { error: 'Invalid' };
+	// const success = pass ? body : { error: 'Invalid' };
 
 	if (existingTokens.size > 1000) existingTokens = new Set();
 	existingTokens.add(token)
 
-	return res;
+	return {
+		pass
+	};
 });
 
 exports.api = functions.region('europe-west1').https.onRequest((req, res) => {

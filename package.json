@@ -12,6 +12,7 @@
   "dependencies": {
     "axios": "^0.24.0",
     "fastify": "^3.25.3",
+    "fastify-rate-limit": "^5.7.0",
     "firebase": "^9.6.2",
     "firebase-admin": "^10.0.1",
     "firebase-functions": "^3.16.0",
