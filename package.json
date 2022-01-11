@@ -5,11 +5,14 @@
   "author": "robo-monk",
   "license": "MIT",
   "scripts": {
-    "deploy": "firebase deploy",
-	"dev": "firebase emulators:start"
+    "deploy": "firebase deploy --only functions",
+    "dev": "firebase emulators:start",
+    "firebase": "firebase"
   },
   "dependencies": {
+    "axios": "^0.24.0",
     "fastify": "^3.25.3",
+    "firebase": "^9.6.2",
     "firebase-admin": "^10.0.1",
     "firebase-functions": "^3.16.0",
     "firebase-tools": "^10.0.1"
