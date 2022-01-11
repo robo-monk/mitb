@@ -19,6 +19,13 @@ fastify.register(require('fastify-rate-limit'), {
 	timeWindow: '1 minute',
 });
 
+
+// cors
+fastify.register(require('fastify-cors'), { 
+  // put your options here
+  origin: '*'
+})
+
 fastify.addContentTypeParser('application/json', {}, (req, body, done) => {
 	done(null, body.body);
 });
@@ -28,7 +35,9 @@ fastify.addContentTypeParser('application/json', {}, (req, body, done) => {
 // })
 
 const existingTokens = new Set();
+
 fastify.post('/request', async ({ body }) => {
+	if (!body) return null;
 	let token = body.token;
 
 	let pass =
